@@ -19,7 +19,7 @@ flag development
 executable server
   hs-source-dirs:      src
   main-is:             Main.hs
-  other-modules:       Application Db Site Util
+  other-modules:       Application Db Site Util Model.Db Model.Types
   ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
     aeson                 >= 1.0.2.1,
