@@ -33,6 +33,8 @@ main =
     requireAuthFail =
       map (\u -> testCase u (testLoggedInFail (mkUrl u) defaults)) authReqd
     -- REST entry points which require user to be logged in
-    authReqd = [ "/api/todo"
-               , "/api/user"
+    authReqd = [ "/rest/note"
+               , "/rest/weight"
+               , "/rest/exercise"
+               , "/rest/workout"
                ]
