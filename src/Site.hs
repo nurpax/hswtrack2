@@ -27,6 +27,8 @@ import           Snap.Util.FileServe
 import           Application
 import qualified Db
 import           Util
+import           REST
+import           Model (createTables)
 
 type H = Handler App App
 
@@ -55,38 +57,22 @@ handleRestUserInfo = method GET (replyJson userInfo)
   where
     userInfo (Db.User uid login) = return . Right $ object ["id" .= uid, "login" .= login]
 
-handleRestListTodos :: H ()
-handleRestListTodos =
-  replyJson $ \user -> runDbWithUser user $ (Right <$> Db.listTodos)
-
-handleRestNewTodo :: H ()
-handleRestNewTodo = do
-  ps <- reqJSON
-  replyJson (newTodo ps)
-  where
-    newTodo PostTodoParams{..} user =
-      runDbWithUser user $ Right <$> Db.newTodo text
-
-handleRestUpdateTodo :: H ()
-handleRestUpdateTodo = do
-  ps     <- reqJSON
-  todoId <- reqParam "id"
-  replyJson (updateTodo ps todoId)
-  where
-    updateTodo PostTodoParams{..} tid user = do
-      let newTodo = Db.Todo tid savedOn completed text
-      runDbWithUser user $ Db.saveTodo newTodo
-
 handleUnknownAPI :: H ()
 handleUnknownAPI = method GET err <|> method POST err <|> method PUT err
   where
     err = finishEarly 404 "Unknown API endpoint"
 
 apiRoutes :: [(ByteString, Handler App App ())]
-apiRoutes = [ ("/api/user",       handleRestUserInfo)
-            , ("/api/todo",       method GET  handleRestListTodos)
-            , ("/api/todo/:id",   method POST handleRestUpdateTodo)
-            , ("/api/todo",       method POST handleRestNewTodo)
+apiRoutes = [ ("/api/user",      handleRestUserInfo)
+            , ("/rest/app",      method GET restAppContext)
+            , ("/rest/weight",   method GET restListWeights <|> method POST restSetWeight <|> method DELETE restClearWeight)
+            , ("/rest/note",     method GET restListNotes <|>method POST restAddNote <|> method DELETE restDeleteNote)
+            , ("/rest/exercise", method GET restListExerciseTypes <|> method POST restNewExerciseType)
+            , ("/rest/workout/exercise", method POST restAddExerciseSet <|> method DELETE restDeleteExerciseSet)
+            , ("/rest/workout",  method POST restNewWorkout)
+            , ("/rest/workout",  method GET restQueryWorkouts)
+            , ("/rest/workout",  method PUT restModifyWorkout)
+            , ("/rest/stats/workout", method GET restQueryWorkoutHistory)
              ]
 
 -- | The application's routes.
@@ -113,5 +99,5 @@ app = makeSnaplet "app" "An snaplet example application." Nothing $ do
     -- Grab the DB connection pool from the sqlite snaplet and call
     -- into the Model to create all the DB tables if necessary.
     let c = sqliteConn $ d ^# snapletValue
-    liftIO $ withMVar c $ \conn -> Db.createTables conn
+    liftIO $ withMVar c $ \conn -> createTables conn
     return $ App d j

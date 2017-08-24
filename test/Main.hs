@@ -5,7 +5,8 @@ import           Test.Framework
 import           Test.Framework.Providers.HUnit
 
 import           Test
-import           TestTodo
+import           Workout
+import           Weight
 
 main :: IO ()
 main =
@@ -13,11 +14,15 @@ main =
   [ testGroup "require auth fail" requireAuthFail
   , buildTest $ createUserTests [ ("logged in after create user?", testLoggedInOK) ]
   , buildTest $ loginUserTests  [ ("logged in?",       testLoggedInOK)
-                                , ("no todos yet",     testListTodosEmpty)
-                                , ("add one todo",     testAddTodo)
-                                , ("edit todo",        testUpdateTodo)
-                                , ("test two users",   testUserAccess)
-                                , ("unallowed access", testUserAccessInvalidReq)
+                                , ("Add exercise 1",   testAddExercise "chin-ups" "BW")
+                                , ("Add exercise 2",   testAddExercise "deadlift" "W")
+                                , ("Add exercise 3",   testAddExercise "planking" "T")
+                                , ("Create workout",   testWorkout)
+                                , ("Delete sets",      testSetDelete)
+                                , ("Delete sets 2",    testSetDelete2)
+                                , ("Add note",         testAddNote)
+                                , ("Set/clear weight", testSetWeight)
+                                , ("Create workout 2", testWorkoutTime)
                                 ]
   , testCase "require 404" $ testUnknownAPIEndpoint "/api/foo"
 --                                ]

@@ -4,6 +4,8 @@
 module Util (
     reqJSON
   , reqParam
+  , parseParam
+  , tryGetParam
   , writeJSON
   , jsonResponse
   , finishEarly
@@ -14,6 +16,8 @@ import           Control.Error hiding (err)
 import qualified Data.Aeson as A
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as Char8
+import           Data.Int (Int64)
+import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Data.Text.Read as T
 
@@ -26,6 +30,15 @@ class FromParam a where
 
 instance (FromParam Int) where
   parseParam = reader T.decimal
+
+instance (FromParam Int64) where
+  parseParam = reader T.decimal
+
+instance (FromParam Double) where
+  parseParam = reader T.double
+
+instance (FromParam T.Text) where
+  parseParam = Right . T.decodeUtf8  -- FIXME: decode could fail
 
 tryGetParam :: MonadSnap m => B.ByteString -> m (Either B.ByteString B.ByteString)
 tryGetParam p =
