@@ -25,6 +25,7 @@
     "babel-preset-react": "^6.24.1",
     "classnames": "^2.2.5",
     "history": "^4.7.2",
+    "d3": "^4.10.0",
     "isomorphic-fetch": "^2.2.1",
     "jwt-decode": "^2.2.0",
     "prop-types": "^15.5.10",
