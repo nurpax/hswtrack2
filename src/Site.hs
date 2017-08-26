@@ -15,9 +15,6 @@ import           Control.Monad.Except
 import           Control.Lens hiding ((.=))
 import           Data.Aeson hiding (json)
 import           Data.ByteString (ByteString)
-import qualified Data.Text as T
-import           Data.Time (UTCTime)
-import           GHC.Generics
 import           Snap.Core
 import           Snap.Snaplet
 import qualified Snap.Snaplet.SqliteSimple.JwtAuth as J
@@ -25,37 +22,21 @@ import           Snap.Snaplet.SqliteSimple
 import           Snap.Util.FileServe
 ------------------------------------------------------------------------------
 import           Application
-import qualified Db
 import           Util
 import           REST
-import           Model (createTables)
+import           Model (User(..), createTables)
 
 type H = Handler App App
 
-data PostTodoParams = PostTodoParams {
-    savedOn   :: Maybe UTCTime
-  , completed :: Bool
-  , text      :: T.Text
-  } deriving (Generic)
-
-instance FromJSON PostTodoParams
-
-replyJson :: ToJSON a => (Db.User -> Handler App J.SqliteJwt (Either ByteString a)) -> H ()
+replyJson :: ToJSON a => (Model.User -> Handler App J.SqliteJwt (Either ByteString a)) -> H ()
 replyJson action = do
-  res <- with jwt $ J.requireAuth (\(J.User uid login) -> action (Db.User uid login))
+  res <- with jwt $ J.requireAuth (\(J.User uid login) -> action (User uid login))
   either (finishEarly 403) writeJSON res
-
--- Run DB queries with a connection and a logged in user.
-runDbWithUser :: (HasSqlite (m App Sqlite), MonadSnaplet m)
-  => Db.User
-  -> Db.Db a
-  -> m App v a
-runDbWithUser user action = withTop db . withSqlite $ \conn -> Db.runDb conn user action
 
 handleRestUserInfo :: H ()
 handleRestUserInfo = method GET (replyJson userInfo)
   where
-    userInfo (Db.User uid login) = return . Right $ object ["id" .= uid, "login" .= login]
+    userInfo (User uid login) = return . Right $ object ["id" .= uid, "login" .= login]
 
 handleUnknownAPI :: H ()
 handleUnknownAPI = method GET err <|> method POST err <|> method PUT err
@@ -64,9 +45,8 @@ handleUnknownAPI = method GET err <|> method POST err <|> method PUT err
 
 apiRoutes :: [(ByteString, Handler App App ())]
 apiRoutes = [ ("/api/user",      handleRestUserInfo)
-            , ("/rest/app",      method GET restAppContext)
             , ("/rest/weight",   method GET restListWeights <|> method POST restSetWeight <|> method DELETE restClearWeight)
-            , ("/rest/note",     method GET restListNotes <|>method POST restAddNote <|> method DELETE restDeleteNote)
+            , ("/rest/note",     method GET restListNotes <|> method POST restAddNote <|> method DELETE restDeleteNote)
             , ("/rest/exercise", method GET restListExerciseTypes <|> method POST restNewExerciseType)
             , ("/rest/workout/exercise", method POST restAddExerciseSet <|> method DELETE restDeleteExerciseSet)
             , ("/rest/workout",  method POST restNewWorkout)

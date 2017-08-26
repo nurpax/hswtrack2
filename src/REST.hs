@@ -4,11 +4,8 @@
 -- client.  These types do not directly map to what's in the Model,
 -- rather these are more coupled with client app logic.
 module REST
-  ( AppContext(..)
-  , ConfigVal(..)
+  ( ConfigVal(..)
   , WeightSample(..)
-  , restAppContext
-  , restLoginError
   , restSetWeight
   , restClearWeight
   , restListWeights
@@ -46,31 +43,17 @@ import           Model
 
 type H = Handler App App
 
--- Everything needed for rendering the home/settings page
-data AppContext = AppContext {
-    acLoggedIn   :: Bool
-  , acLoginError :: Maybe T.Text
-  , acContext    :: Maybe LoggedInContext
+data WeightResponse = WeightResponse {
+    _wrWeight   :: Maybe WeightSample
+  , _wrSettings :: M.Map String ConfigVal
+  , _wrWeights  :: [WeightSample]
   }
 
-instance ToJSON AppContext where
-  toJSON (AppContext loggedIn e ctx) =
-    object [ "loggedIn"   .= loggedIn
-           , "loginError" .= e
-           , "context"    .= ctx
-           ]
-
-data LoggedInContext = LoggedInContext {
-    _ctxLogin    :: T.Text
-  , _ctxWeight   :: Maybe WeightSample
-  , _ctxSettings :: M.Map String ConfigVal
-  }
-
-instance ToJSON LoggedInContext where
-  toJSON (LoggedInContext u w o) =
-    object [ "login"   .= u
-           , "weight"  .= w
+instance ToJSON WeightResponse where
+  toJSON (WeightResponse w o ws) =
+    object [ "today"   .= w
            , "options" .= o
+           , "weights" .= ws
            ]
 
 instance ToJSON ConfigVal where
@@ -148,10 +131,6 @@ instance FromJSON UserPutReq where
     parseJSON (Object v) = UserPutReq <$> v .: "password"
     parseJSON _          = mzero
 
-restLoginError :: MonadSnap m => T.Text -> m ()
-restLoginError e =
-  writeJSON (AppContext False (Just e) Nothing)
-
 replyJson :: ToJSON a => (Model.User -> Handler App J.SqliteJwt (Either ByteString a)) -> H ()
 replyJson action = do
   res <- with jwt $ J.requireAuth (\(J.User uid login) -> action (Model.User uid login))
@@ -180,22 +159,6 @@ getToday = do
       --tryJust (badReq "invalid GET date format") t'
     Left _ -> liftIO getCurrentTime
 
--- Every page render calls this handler to get an "app context".  This
--- context struct contains things like is the user logged in, what's
--- his name, etc.  This is used on client-side to implement login
--- screen, among other things.
-restAppContext :: H ()
-restAppContext = replyJson get
-  where
-    get user@(Model.User _ login) = do
-      today <- getToday
-      (weight, options) <-
-        withDb $ \conn -> do
-          weight <- Model.queryTodaysWeight conn user today
-          options <- Model.queryOptions conn user
-          return (weight, options)
-      return . Right $ AppContext True Nothing (Just (LoggedInContext login weight options))
-
 restClearWeight :: H ()
 restClearWeight = replyJson $ \user -> do
   weightId <- RowId <$> reqParam "id"
@@ -211,8 +174,14 @@ restListWeights :: H ()
 restListWeights =
   replyJson $ \user -> do
     today     <- getToday
+    (weight, options) <-
+      withDb $ \conn -> do
+        weight <- Model.queryTodaysWeight conn user today
+        options <- Model.queryOptions conn user
+        return (weight, options)
     lastNDays <- reqParam "days"
-    withDb $ \conn -> Right <$> Model.queryWeights conn user today lastNDays
+    ws <- withDb $ \conn -> Model.queryWeights conn user today lastNDays
+    return $ Right (WeightResponse weight options ws)
 
 restAddNote :: H ()
 restAddNote = replyJson $ \user -> do
