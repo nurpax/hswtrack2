@@ -2,7 +2,13 @@
 import * as c from './constants'
 import { fetchWithAuth } from './auth'
 
-// Todo handling
+export function setWeightDayLimit (nDays) {
+  return {
+    type: c.SET_WEIGHT_DAY_LIMIT,
+    data: nDays
+  }
+}
+
 function receiveWeights (json) {
   return {
     type: c.RECEIVE_WEIGHTS,
