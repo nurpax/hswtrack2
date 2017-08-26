@@ -5,43 +5,19 @@ import { routerReducer } from 'react-router-redux'
 import * as c from './constants'
 import * as auth from './auth'
 
-function receiveTodos (state = [], action) {
+function receiveWeights (state = [], action) {
   switch (action.type) {
-    case c.RECEIVE_TODO_LIST:
+    case c.RECEIVE_WEIGHTS:
       return action.data
-    case c.RECEIVE_TODO: {
-      let existingItem = false
-      let newState =
-        state.map(function (todo) {
-          if (todo.id === action.data.id) {
-            existingItem = true
-            return action.data
-          } else {
-            return todo
-          }
-        })
-      if (!existingItem) {
-        return state.concat(action.data)
-      }
-      return newState
-    }
     default:
       return state
   }
 }
 
-const filterReducer = (state = 'active', { type, data }) => {
-  if (type === c.SET_FILTER) {
-    return data
-  }
-  return state
-}
-
 const appReducer = combineReducers({
   auth: auth.authReducer,
-  filter: filterReducer,
   routing: routerReducer,
-  todos: receiveTodos,
+  weight: receiveWeights,
 })
 
 const rootReducer = (state, action) => {

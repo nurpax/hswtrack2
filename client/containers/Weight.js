@@ -1,7 +1,11 @@
 
+import ReactDOM from 'react-dom';
 import React, { Component } from 'react'
 import * as d3 from "d3"
 import * as $ from "jquery-ajax"
+import { connect } from 'react-redux'
+import { fetchWeights } from '../actions'
+import * as sel from '../selectors'
 
 const DEFAULT_DAYS = 90
 
@@ -82,14 +86,6 @@ class ModelWeightTop {
       this.app = { context: { weight: 100 } } // FIXME
       this.weights = new ModelWeights(w[0])
       this.notes   = new ModelNotes(n[0])
-      this.selectedRange = selectedGraphDays
-      this.owner.setState(this)
-    }.bind(this))
-  }
-
-  loadWeights (selectedGraphDays) {
-    $.when(loadWeights(selectedGraphDays)).done(function (w) {
-      this.weights = new Weights(w)
       this.selectedRange = selectedGraphDays
       this.owner.setState(this)
     }.bind(this))
@@ -224,13 +220,13 @@ class TodayWeight extends Component {
 }
 
 function renderPlotPriv(props, svg, origWidth, origHeight) {
-  var data    = props.weights.weights
+  var data    = props.weights
 
   var margin = { top: 10, right: 25, bottom: 30, left: 25 },
       width  = origWidth - margin.left - margin.right,
       height = origHeight - margin.top - margin.bottom
 
-  var parseDate = d3.timeFormat("%Y-%m-%d").parse
+  var parseDate = d3.timeParse("%Y-%m-%d")
 
   var x = d3.scaleTime()
                  .range([0, width])
@@ -259,8 +255,8 @@ function renderPlotPriv(props, svg, origWidth, origHeight) {
   var pd = data.map(function (d) { return { date: parseDate(d.date), weight: d.weight } })
   x.domain(d3.extent(pd, function(d) { return d.date }))
 
-  if (props.context.options.minGraphWeight)
-    y.domain([props.context.options.minGraphWeight, d3.max(pd, function(d) { return d.weight })])
+  if (props.options.minGraphWeight)
+    y.domain([props.options.minGraphWeight, d3.max(pd, function(d) { return d.weight })])
   else
     y.domain(d3.extent(pd, function(d) { return d.weight }))
 
@@ -295,13 +291,13 @@ function renderPlot(elt, props) {
 
 class WeightPlot extends Component {
   componentDidMount () {
-    var elt = this.getDOMNode()
-    d3.select(elt).call(renderPlot(elt, this.props))
+    var elt = ReactDOM.findDOMNode(this)
+    d3.select(elt).call(renderPlot(elt, this.props.weight))
   }
 
   shouldComponentUpdate () {
-    var elt = this.getDOMNode()
-    d3.select(elt).call(renderPlot(elt, this.props))
+    var elt = ReactDOM.findDOMNode(this)
+    d3.select(elt).call(renderPlot(elt, this.props.weight))
     // always skip React's render step
     return false
   }
@@ -316,27 +312,23 @@ class WeightsTop extends Component {
 
   constructor (props) {
     super(props)
-    this.props.model.owner = this
-  }
-
-  reloadWeights (nDays) {
-    this.props.model.loadWeights(nDays)
   }
 
   componentDidMount () {
-    this.props.model.load(DEFAULT_DAYS)
+    const NDAYS = 30
+    this.props.loadWeights(NDAYS)
   }
 
   clearWeight () {
-    this.props.model.clearWeight()
+    //this.props.model.clearWeight()
   }
 
   setWeight (newWeight) {
-    this.props.model.setWeight(newWeight)
+    //this.props.model.setWeight(newWeight)
   }
 
   selectRange (e) {
-    this.reloadWeights(e.target.value)
+    this.props.loadWeights(e.target.value)
   }
 
   render () {
@@ -346,7 +338,6 @@ class WeightsTop extends Component {
                    {t:"Lifetime",  n:0}]
     var radios = choices.map(function (c, ndx) {
       var cl = "btn btn-default btn-sm"
-      console.log(this)
       var classes = c.n == this.state.selectedRange ? cl+" active" : cl
       return (
         <label key={c.n} className={classes}>
@@ -354,36 +345,42 @@ class WeightsTop extends Component {
         </label>)
     }, this)
 
-    if (!this.state.app)
+    if (!this.props.weight.weights)
       return null
     return (
       <div>
         <TodayWeight
           onWeightSubmit={this.setWeight}
           onClearWeight={this.clearWeight}
-          weight={this.state.app.context.weight} />
+          weight={this.props.weight.today} />
         <br />
-
         <div>
           <div className='row'>
-            <WeightPlot weights={this.state.weights} context={this.state.app.context} />
+            <WeightPlot weight={this.props.weight} />
           </div>
           <div className='btn-group' data-toggle='buttons'>
             {radios}
           </div>
         </div>
         <br />
-        <CommentList model={this.state.notes} />
       </div>
+//        <CommentList model={this.state.notes} />
     )
   }
 }
 
-var EnhanceWeights = ComposedComponent => class extends Component {
-  render () {
-    return <ComposedComponent model={new ModelWeightTop(this)} />
+const mapDispatchToProps = (dispatch) => {
+  return {
+    loadWeights: (nDays) => {
+      dispatch(fetchWeights(nDays))
+    }
   }
 }
 
-export default EnhanceWeights(WeightsTop)
+function mapStateToProps (state) {
+  return {
+    weight: state.weight
+  }
+}
 
+export default connect(mapStateToProps, mapDispatchToProps)(WeightsTop)
