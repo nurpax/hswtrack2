@@ -3,43 +3,36 @@ import * as c from './constants'
 import { fetchWithAuth } from './auth'
 
 // Todo handling
-function receiveTodos (json) {
+function receiveWeights (json) {
   return {
-    type: c.RECEIVE_TODO_LIST,
+    type: c.RECEIVE_WEIGHTS,
     data: json,
     receivedAt: Date.now()
   }
 }
 
-function receiveTodo (json) {
-  return {
-    type: c.RECEIVE_TODO,
-    data: json,
-    receivedAt: Date.now()
-  }
+function queryParams(params) {
+    return Object.keys(params)
+        .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
+        .join('&')
 }
 
-export function fetchTodos () {
+function toFormData (o) {
+  let formData = new FormData()
+
+  for (var prop in o) {
+    if (o.hasOwnProperty(prop)) {
+      formData.append(prop, o[prop])
+    }
+  }
+  return formData
+}
+
+export function fetchWeights (nDays) {
   return function (dispatch, getState) {
-    return fetchWithAuth(dispatch, getState, '/api/todo', {}, function (json) {
-      dispatch(receiveTodos(json))
+    let params = { days: nDays }
+    return fetchWithAuth(dispatch, getState, '/rest/weight?'+queryParams(params), {}, function (json) {
+      dispatch(receiveWeights(json))
     })
-  }
-}
-
-export function saveTodo (todo) {
-  return function (dispatch, getState) {
-    const url = todo.id ? `/api/todo/${todo.id}` : '/api/todo'
-    return fetchWithAuth(dispatch, getState, url, { method: 'POST', body: todo },
-      function (json) {
-        dispatch(receiveTodo(json))
-      })
-  }
-}
-
-export function setFilter (filter) {
-  return {
-    type: c.SET_FILTER,
-    data: filter
   }
 }
