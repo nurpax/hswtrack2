@@ -26,7 +26,6 @@
     "classnames": "^2.2.5",
     "d3": "^4.10.0",
     "isomorphic-fetch": "^2.2.1",
-    "jquery-ajax": "^2.1.4",
     "jwt-decode": "^2.2.0",
     "prop-types": "^15.5.10",
     "react": "^15.6.1",

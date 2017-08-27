@@ -5,10 +5,35 @@ import { routerReducer } from 'react-router-redux'
 import * as c from './constants'
 import * as auth from './auth'
 
-function receiveWeights (state = {}, action) {
+function reduceWeights (state = {}, action) {
   switch (action.type) {
     case c.RECEIVE_WEIGHTS:
       return action.data
+    case c.RECEIVE_SAVE_WEIGHT:
+      return {
+        ...state,
+        today: action.data,
+        weights: state.weights.concat(action.data)
+      }
+    case c.RECEIVE_CLEAR_WEIGHT:
+      return {
+        ...state,
+        today: null,
+        weights: state.weights.filter(w => w.id != action.id)
+      }
+    default:
+      return state
+  }
+}
+
+function reduceNotes (state = [], action) {
+  switch (action.type) {
+    case c.RECEIVE_NOTES:
+      return action.data
+    case c.RECEIVE_ADD_NOTE:
+      return state.concat(action.data)
+    case c.RECEIVE_DELETE_NOTE:
+      return state.filter(n => n.id != action.id)
     default:
       return state
   }
@@ -26,7 +51,8 @@ function reduceWeightUiState (state = { dayLimit: 90 }, action) {
 const appReducer = combineReducers({
   auth: auth.authReducer,
   routing: routerReducer,
-  weight: receiveWeights,
+  weight: reduceWeights,
+  weightNotes: reduceNotes,
   weightui: reduceWeightUiState,
 })
 
