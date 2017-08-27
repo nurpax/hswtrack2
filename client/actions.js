@@ -67,74 +67,55 @@ function queryParams(params) {
         .join('&')
 }
 
-// Same as fetchWithAuth but with the POST/DELETE parameters passed as www-
-// form-urlencoded instead of JSON.
-function fetchWithAuthUrlEncoded (dispatch, getState, url, params, cb) {
-  const p = { ...params,
-    headers: { ...params.headers, 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-    body: qs.stringify(params.body)
+function formRequestDispatch (method, url, params, action) {
+  const p = {
+    method: method,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+    body: qs.stringify(params)
   }
-  return fetchWithAuth(dispatch, getState, url, p, cb)
-}
-
-
-export function fetchWeights (nDays) {
   return function (dispatch, getState) {
-    let params = { days: nDays }
-    return fetchWithAuth(dispatch, getState, '/rest/weight?'+queryParams(params), {}, function (json) {
-      dispatch(receiveWeights(json))
+    return fetchWithAuth(dispatch, getState, url, p, function (json) {
+      dispatch(action(json))
     })
   }
+}
+
+function getDispatch (url, params, action) {
+  return function (dispatch, getState) {
+    return fetchWithAuth(dispatch, getState, url + '?' + queryParams(params), {}, function (json) {
+      dispatch(action(json))
+    })
+  }
+}
+
+function postDispatch(url, params, action) {
+  return formRequestDispatch('POST', url, params, action)
+}
+
+function deleteDispatch(url, params, action) {
+  return formRequestDispatch('DELETE', url, params, action)
+}
+
+export function fetchWeights (nDays) {
+  return getDispatch('/rest/weight', { days: nDays }, receiveWeights)
 }
 
 export function saveWeight (w) {
-  return function (dispatch, getState) {
-    return fetchWithAuthUrlEncoded(dispatch, getState, '/rest/weight', {
-      method: 'POST',
-      body: { weight: w }
-    }, function (json) {
-      dispatch(receiveSaveWeight(json))
-    })
-  }
+  return postDispatch('/rest/weight', { weight: w }, receiveSaveWeight)
 }
 
 export function clearWeight (id) {
-  return function (dispatch, getState) {
-    return fetchWithAuthUrlEncoded(dispatch, getState, '/rest/weight', {
-      method: 'DELETE',
-      body: { id: id }
-    }, function (json) {
-      dispatch(receiveClearWeight(id, json))
-    })
-  }
+  return deleteDispatch('/rest/weight', { id: id }, json => receiveClearWeight(id, json))
 }
 
-export function fetchNotes (nDays) {
-  return function (dispatch, getState) {
-    return fetchWithAuth(dispatch, getState, '/rest/note', {}, function (json) {
-      dispatch(receiveNotes(json))
-    })
-  }
+export function fetchNotes () {
+  return getDispatch('/rest/note', {}, receiveNotes)
 }
 
 export function addNote (text) {
-  return function (dispatch, getState) {
-    return fetchWithAuthUrlEncoded(dispatch, getState, '/rest/note', {
-      method: 'POST',
-      body: { text: text }
-    }, function (json) {
-      dispatch(receiveAddNote(json))
-    })
-  }
+  return postDispatch('/rest/note', { text: text }, receiveAddNote)
 }
 
 export function deleteNote (id) {
-  return function (dispatch, getState) {
-    return fetchWithAuthUrlEncoded(dispatch, getState, '/rest/note', {
-      method: 'DELETE',
-      body: { id: id }
-    }, function (json) {
-      dispatch(receiveDeleteNote(id, json))
-    })
-  }
+  return deleteDispatch('/rest/note', { id: id }, json => receiveDeleteNote(id, json))
 }
