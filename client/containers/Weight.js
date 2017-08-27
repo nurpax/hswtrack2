@@ -5,6 +5,7 @@ import * as d3 from "d3"
 import * as $ from "jquery-ajax"
 import { connect } from 'react-redux'
 import { fetchWeights, setWeightDayLimit } from '../actions'
+import { Row, Columns } from '../components/helpers'
 import * as sel from '../selectors'
 import s from './Weight.scss'
 
@@ -274,7 +275,7 @@ class WeightsTop extends Component {
             value={c.n}
             type='radio'
             name='graph-range' />
-          <small>{c.t}</small>
+          <span className='label-body'>{c.t}</span>
         </label>)
     }, this)
 
@@ -287,14 +288,16 @@ class WeightsTop extends Component {
           onClearWeight={this.clearWeight}
           weight={this.props.weight.today} />
         <br />
-        <div>
-          <div className='row'>
+        <Row>
+          <Columns n={12}>
             <WeightPlot weight={this.props.weight} />
-          </div>
-          <div className='btn-group' data-toggle='buttons'>
+          </Columns>
+        </Row>
+        <Row>
+          <Columns n={6}>
             {radios}
-          </div>
-        </div>
+          </Columns>
+        </Row>
         <br />
       </div>
 //        <CommentList model={this.state.notes} />
