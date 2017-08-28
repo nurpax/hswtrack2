@@ -13,9 +13,10 @@ class Main extends Component {
   }
 
   render () {
+    const main = this.props.user ? <Weight /> : "Login required."
     return (
       <Layout user={this.props.user}>
-        <Weight />
+        {main}
       </Layout>
     )
   }
