@@ -60,6 +60,21 @@ function receiveDeleteNote (id, json) {
   }
 }
 
+function receiveExercises (json) {
+  return {
+    type: c.RECEIVE_EXERCISES,
+    data: json,
+    receivedAt: Date.now()
+  }
+}
+
+function receiveAddExercise (json) {
+  return {
+    type: c.RECEIVE_ADD_EXERCISE,
+    data: json,
+    receivedAt: Date.now()
+  }
+}
 
 function queryParams(params) {
     return Object.keys(params)
@@ -118,4 +133,12 @@ export function addNote (text) {
 
 export function deleteNote (id) {
   return deleteDispatch('/rest/note', { id: id }, json => receiveDeleteNote(id, json))
+}
+
+export function fetchExercises () {
+  return getDispatch('/rest/exercise', {}, receiveExercises)
+}
+
+export function addExercise (exercise) {
+  return postDispatch('/rest/exercise', exercise, receiveAddExercise)
 }

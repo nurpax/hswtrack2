@@ -58,3 +58,13 @@ export class Columns extends Component {
     )
   }
 }
+
+export class Well extends Component {
+  static propTypes = {
+    children: PropTypes.any,
+    className: PropTypes.string
+  }
+  render () {
+    return <div className={classNames(this.props.className, s.well)}>{this.props.children}</div>
+  }
+}

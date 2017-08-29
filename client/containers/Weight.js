@@ -4,7 +4,7 @@ import React, { Component } from 'react'
 import * as d3 from "d3"
 import { connect } from 'react-redux'
 import * as actions from '../actions'
-import { Row, Columns } from '../components/helpers'
+import { Row, Columns, Well } from '../components/helpers'
 import s from './Weight.scss'
 
 class Comment extends Component {
@@ -103,13 +103,13 @@ class TodayWeight extends Component {
       )
     } else {
       return (
-        <div className={s.well}>
+        <Well>
           <p>Please enter your weight (kg):</p>
           <form onSubmit={this.handleWeightSubmit}>
             <input ref='weight' type='number' step='any' min='0' placeholder='Enter weight..' />
             &nbsp;<button className='button-primary'>Save</button>
           </form>
-        </div>
+        </Well>
       )
     }
   }

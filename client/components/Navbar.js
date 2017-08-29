@@ -52,6 +52,7 @@ export default class Navbar extends Component {
     return (
       <ul className={topClass}>
         <Nli><Link className={s.active} to='/'>Home</Link></Nli>
+        <Nli><Link className={s.active} to='/workout'>Workout</Link></Nli>
         {this.userMenu()}
       </ul>
       )
