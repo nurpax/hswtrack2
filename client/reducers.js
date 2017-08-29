@@ -39,6 +39,17 @@ function reduceNotes (state = [], action) {
   }
 }
 
+function reduceExercises (state = [], action) {
+  switch (action.type) {
+    case c.RECEIVE_EXERCISES:
+      return action.data
+    case c.RECEIVE_ADD_EXERCISE:
+      return state.concat(action.data)
+    default:
+      return state
+  }
+}
+
 function reduceWeightUiState (state = { dayLimit: 90 }, action) {
   switch (action.type) {
     case c.SET_WEIGHT_DAY_LIMIT:
@@ -54,6 +65,7 @@ const appReducer = combineReducers({
   weight: reduceWeights,
   weightNotes: reduceNotes,
   weightui: reduceWeightUiState,
+  exercises: reduceExercises,
 })
 
 const rootReducer = (state, action) => {

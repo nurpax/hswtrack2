@@ -1,3 +1,7 @@
 
 @import url('../../static/skeleton-2.0.4/css/normalize.css');
 @import url('../../static/skeleton-2.0.4/css/skeleton.css');
+
+form {
+  margin-bottom: 0rem;
+}
