@@ -30,7 +30,7 @@ class WorkoutListComponent extends Component {
   }
 
   render () {
-    const workouts = this.props.workouts.map(w => <li><WorkoutTitle workout={w} /></li>)
+    const workouts = this.props.workouts.map(w => <li key={w.id}><WorkoutTitle workout={w} /></li>)
     return (
       <div>
         <h2>Today's workouts</h2>
