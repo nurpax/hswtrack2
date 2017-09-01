@@ -9,7 +9,8 @@ import Login from './Login'
 import SignUp from './SignUp'
 import Profile from './Profile'
 
-import Workout from './Workout'
+import Workout from './workout/Workout'
+import WorkoutDetails from './workout/WorkoutDetails'
 import Exercises from './Exercises'
 
 import configureStore from '../configureStore'
@@ -21,6 +22,7 @@ const AuthSignUp = userIsNotAuthenticatedRedir(SignUp)
 const AuthProfile = userIsAuthenticatedRedir(Profile)
 
 const AuthWorkout = userIsAuthenticatedRedir(Workout)
+const AuthWorkoutDetails = userIsAuthenticatedRedir(WorkoutDetails)
 const AuthExercises = userIsAuthenticatedRedir(Exercises)
 
 const Root = () => (
@@ -28,6 +30,7 @@ const Root = () => (
     <ConnectedRouter history={history}>
       <Switch>
         <Route exact path='/' component={Main} />
+        <Route exact path='/workout/:id' component={AuthWorkoutDetails} />
         <Route exact path='/workout' component={AuthWorkout} />
         <Route exact path='/exercises' component={AuthExercises} />
         <Route exact path='/login' component={AuthLogin} />

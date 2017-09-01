@@ -1,28 +1,11 @@
-import ReactDOM from 'react-dom'
 import React, { Component } from 'react'
-import * as d3 from "d3"
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { getUser } from '../auth'
-import * as actions from '../actions'
-import { Row, Columns } from '../components/helpers'
-import Layout from '../components/Layout'
+import { getUser } from '../../auth'
+import * as actions from '../../actions'
+import Layout from '../../components/Layout'
+import WorkoutTitle from '../../components/workout/WorkoutTitle'
 import s from './Workout.scss'
-
-function dateString (v) {
-  if (!v)
-    return null
-  return (new Date(v)).toLocaleString()
-}
-
-const WorkoutTitle = ({ workout }) => {
-  const url = "/workout/"+workout.id
-  const timestamp = dateString(workout.time)
-  const pub = workout.public ? <small className={s.public}>[public]</small> : null
-  return (
-    <h4><Link to={url}>Workout {workout.id}</Link> <small>{timestamp}</small> {pub}</h4>
-  )
-}
 
 class WorkoutListComponent extends Component {
   static mapDispatchToProps = (dispatch) => {
