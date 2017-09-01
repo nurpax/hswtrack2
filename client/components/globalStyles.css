@@ -5,3 +5,11 @@
 form {
   margin-bottom: 0rem;
 }
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}

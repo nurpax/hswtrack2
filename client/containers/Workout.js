@@ -7,7 +7,63 @@ import { getUser } from '../auth'
 import * as actions from '../actions'
 import { Row, Columns } from '../components/helpers'
 import Layout from '../components/Layout'
-import s from './Weight.scss'
+import s from './Workout.scss'
+
+function dateString (v) {
+  if (!v)
+    return null
+  return (new Date(v)).toLocaleString()
+}
+
+const WorkoutTitle = ({ workout }) => {
+  const url = "/workout/"+workout.id
+  const timestamp = dateString(workout.time)
+  const pub = workout.public ? <small className={s.public}>[public]</small> : null
+  return (
+    <h4><Link to={url}>Workout {workout.id}</Link> <small>{timestamp}</small> {pub}</h4>
+  )
+}
+
+class WorkoutListComponent extends Component {
+  static mapDispatchToProps = (dispatch) => {
+    return {
+      loadWorkouts: (e) => dispatch(actions.fetchWorkouts()),
+      newWorkout: () => dispatch(actions.newWorkout())
+    }
+  }
+
+  static mapStateToProps = (state) => {
+    return {
+      workouts: state.workouts
+    }
+  }
+
+  componentDidMount () {
+    this.props.loadWorkouts()
+  }
+
+  newWorkout = () => {
+    this.props.newWorkout()
+  }
+
+  render () {
+    const workouts = this.props.workouts.map(w => <li><WorkoutTitle workout={w} /></li>)
+    return (
+      <div>
+        <h2>Today's workouts</h2>
+        <ul className={s.unstyled}>
+          {workouts}
+        </ul>
+        <button className='button-primary' onClick={this.newWorkout}>Add a Workout</button>
+      </div>
+    )
+  }
+}
+
+const WorkoutList = connect(
+  WorkoutListComponent.mapStateToProps,
+  WorkoutListComponent.mapDispatchToProps)(WorkoutListComponent)
+
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -23,7 +79,10 @@ function mapStateToProps (state) {
 const Workout = function (props) {
   return (
     <Layout user={props.user}>
-      <div><Link to='/exercises'>Edit exercises</Link></div>
+      <div>
+        <WorkoutList />
+        <Link to='/exercises'>Edit exercises</Link>
+      </div>
     </Layout>
   )
 }

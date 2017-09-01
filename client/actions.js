@@ -76,6 +76,22 @@ function receiveAddExercise (json) {
   }
 }
 
+function receiveWorkouts (json) {
+  return {
+    type: c.RECEIVE_WORKOUTS,
+    data: json,
+    receivedAt: Date.now()
+  }
+}
+
+function receiveAddWorkout (json) {
+  return {
+    type: c.RECEIVE_ADD_WORKOUT,
+    data: json,
+    receivedAt: Date.now()
+  }
+}
+
 function queryParams(params) {
     return Object.keys(params)
         .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
@@ -141,4 +157,12 @@ export function fetchExercises () {
 
 export function addExercise (exercise) {
   return postDispatch('/rest/exercise', exercise, receiveAddExercise)
+}
+
+export function fetchWorkouts () {
+  return getDispatch('/rest/workout', {}, receiveWorkouts)
+}
+
+export function newWorkout () {
+  return postDispatch('/rest/workout', {}, receiveAddWorkout)
 }
