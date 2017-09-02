@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { getUser } from '../../auth'
+import { getWorkoutsForToday } from '../../selectors'
 import * as actions from '../../actions'
 import Layout from '../../components/Layout'
 import WorkoutTitle from '../../components/workout/WorkoutTitle'
@@ -17,7 +18,8 @@ class WorkoutListComponent extends Component {
 
   static mapStateToProps = (state) => {
     return {
-      workouts: state.workouts
+      workouts: getWorkoutsForToday(state)
+
     }
   }
 

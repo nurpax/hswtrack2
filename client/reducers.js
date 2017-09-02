@@ -50,12 +50,34 @@ function reduceExercises (state = [], action) {
   }
 }
 
-function reduceWorkouts (state = [], action) {
+function reduceWorkouts (state = { todayIds: [], byId: {} }, action) {
   switch (action.type) {
-    case c.RECEIVE_WORKOUTS:
-      return action.data
+    case c.RECEIVE_WORKOUTS: {
+      const workouts = action.data
+      const byId = {}
+      workouts.forEach(w => byId[w.id] = w)
+      return {
+        todayIds: workouts.map(w => w.id),
+        byId
+      }
+    }
+    case c.RECEIVE_WORKOUT:
+      return {
+        ...state,
+        byId: {
+          ...state.byId,
+          [action.data.id]: action.data
+        }
+      }
     case c.RECEIVE_ADD_WORKOUT:
-      return state.concat(action.data)
+      return {
+        ...state,
+        todayIds: state.todayIds.concat(action.data.id),
+        byId: {
+          ...state.byId,
+          [action.data.id]: action.data
+        }
+      }
     default:
       return state
   }

@@ -84,6 +84,14 @@ function receiveWorkouts (json) {
   }
 }
 
+function receiveWorkout (json) {
+  return {
+    type: c.RECEIVE_WORKOUT,
+    data: json,
+    receivedAt: Date.now()
+  }
+}
+
 function receiveAddWorkout (json) {
   return {
     type: c.RECEIVE_ADD_WORKOUT,
@@ -136,7 +144,7 @@ export function saveWeight (w) {
 }
 
 export function clearWeight (id) {
-  return deleteDispatch('/rest/weight', { id: id }, json => receiveClearWeight(id, json))
+  return deleteDispatch('/rest/weight', { id }, json => receiveClearWeight(id, json))
 }
 
 export function fetchNotes () {
@@ -144,11 +152,11 @@ export function fetchNotes () {
 }
 
 export function addNote (text) {
-  return postDispatch('/rest/note', { text: text }, receiveAddNote)
+  return postDispatch('/rest/note', { text }, receiveAddNote)
 }
 
 export function deleteNote (id) {
-  return deleteDispatch('/rest/note', { id: id }, json => receiveDeleteNote(id, json))
+  return deleteDispatch('/rest/note', { id }, json => receiveDeleteNote(id, json))
 }
 
 export function fetchExercises () {
@@ -161,6 +169,10 @@ export function addExercise (exercise) {
 
 export function fetchWorkouts () {
   return getDispatch('/rest/workout', {}, receiveWorkouts)
+}
+
+export function fetchWorkoutById (id) {
+  return getDispatch('/rest/workout', { id }, receiveWorkout)
 }
 
 export function newWorkout () {
