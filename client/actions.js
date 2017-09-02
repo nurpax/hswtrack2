@@ -30,7 +30,7 @@ function receiveClearWeight (id, json) {
   return {
     type: c.RECEIVE_CLEAR_WEIGHT,
     data: json,
-    id: id,
+    id,
     receivedAt: Date.now()
   }
 }
@@ -55,7 +55,7 @@ function receiveDeleteNote (id, json) {
   return {
     type: c.RECEIVE_DELETE_NOTE,
     data: json,
-    id: id,
+    id,
     receivedAt: Date.now()
   }
 }
@@ -99,6 +99,17 @@ function receiveAddWorkout (json) {
     receivedAt: Date.now()
   }
 }
+
+function receiveDeleteSet (workoutId, id, json) {
+  return {
+    type: c.RECEIVE_DELETE_SET,
+    data: json,
+    workoutId,
+    id,
+    receivedAt: Date.now()
+  }
+}
+
 
 function queryParams(params) {
     return Object.keys(params)
@@ -177,4 +188,8 @@ export function fetchWorkoutById (id) {
 
 export function newWorkout () {
   return postDispatch('/rest/workout', {}, receiveAddWorkout)
+}
+
+export function deleteSet (workoutId, id) {
+  return deleteDispatch('/rest/workout/exercise', { id }, json => receiveDeleteSet(workoutId, id, json))
 }

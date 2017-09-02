@@ -50,6 +50,18 @@ function reduceExercises (state = [], action) {
   }
 }
 
+function removeWorkoutSet (workout, setId) {
+  return {
+    ...workout,
+    exercises: workout.exercises.map(e => {
+      return {
+        ...e,
+        sets: e.sets.filter(s => s.id != setId)
+      }
+    })
+  }
+}
+
 function reduceWorkouts (state = { todayIds: [], byId: {} }, action) {
   switch (action.type) {
     case c.RECEIVE_WORKOUTS: {
@@ -76,6 +88,14 @@ function reduceWorkouts (state = { todayIds: [], byId: {} }, action) {
         byId: {
           ...state.byId,
           [action.data.id]: action.data
+        }
+      }
+    case c.RECEIVE_DELETE_SET:
+      return {
+        ...state,
+        byId: {
+          ...state.byId,
+          [action.workoutId]: removeWorkoutSet(state.byId[action.workoutId], action.id)
         }
       }
     default:
