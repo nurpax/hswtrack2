@@ -2,6 +2,22 @@
 @import url('../../static/skeleton-2.0.4/css/normalize.css');
 @import url('../../static/skeleton-2.0.4/css/skeleton.css');
 
+h4 {
+    margin-bottom: 1rem;
+}
+
+/* Normalize table styles after skeleton */
+table {
+  border-collapse: collapse;
+  border-spacing: 2px;
+  margin-bottom: 0px;
+}
+td,
+th {
+  padding: 2px;
+  border-bottom: none;
+}
+
 form {
   margin-bottom: 0rem;
 }
