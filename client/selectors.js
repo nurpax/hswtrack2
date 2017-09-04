@@ -4,6 +4,7 @@ import { createSelector } from 'reselect'
 const getExercises = (state) => state.exercises
 const getWorkouts = (state, props) => state.workouts.byId
 const getTodayWorkoutIds = (state, props) => state.workouts.todayIds
+const getHistoryWorkoutIds = (state, props) => state.workouts.pastIds
 const getRouteWorkoutId = (state, props) => props.match.params.id
 
 function findById(map, id) {
@@ -27,6 +28,13 @@ const getWorkoutsForToday = createSelector(
   }
 )
 
+const getWorkoutHistory = createSelector(
+  [ getHistoryWorkoutIds, getWorkouts ],
+  (ids, workouts) => {
+    return ids.map(id => findById(workouts, id))
+  }
+)
+
 const getExerciseTypes = createSelector(
   [ getExercises ],
   (exercises) => {
@@ -34,4 +42,9 @@ const getExerciseTypes = createSelector(
   }
 )
 
-export { getWorkoutsForToday, getWorkoutFromRoute, getExerciseTypes }
+export {
+  getWorkoutsForToday,
+  getWorkoutFromRoute,
+  getWorkoutHistory,
+  getExerciseTypes
+}

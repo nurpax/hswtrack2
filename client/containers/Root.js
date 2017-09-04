@@ -12,6 +12,7 @@ import Profile from './Profile'
 import Workout from './workout/Workout'
 import WorkoutDetails from './workout/WorkoutDetails'
 import Exercises from './Exercises'
+import Stats from './stats/Stats'
 
 import configureStore from '../configureStore'
 
@@ -24,6 +25,7 @@ const AuthProfile = userIsAuthenticatedRedir(Profile)
 const AuthWorkout = userIsAuthenticatedRedir(Workout)
 const AuthWorkoutDetails = userIsAuthenticatedRedir(WorkoutDetails)
 const AuthExercises = userIsAuthenticatedRedir(Exercises)
+const AuthStats = userIsAuthenticatedRedir(Stats)
 
 const Root = () => (
   <Provider store={store}>
@@ -32,6 +34,7 @@ const Root = () => (
         <Route exact path='/' component={Main} />
         <Route exact path='/workout/:id' component={AuthWorkoutDetails} />
         <Route exact path='/workout' component={AuthWorkout} />
+        <Route exact path='/stats' component={AuthStats} />
         <Route exact path='/exercises' component={AuthExercises} />
         <Route exact path='/login' component={AuthLogin} />
         <Route exact path='/profile' component={AuthProfile} />

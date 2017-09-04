@@ -120,6 +120,13 @@ function receiveDeleteSet (workoutId, id, json) {
   }
 }
 
+function receivePastWorkouts (json) {
+  return {
+    type: c.RECEIVE_PAST_WORKOUTS,
+    data: json,
+    receivedAt: Date.now()
+  }
+}
 
 function queryParams(params) {
     return Object.keys(params)
@@ -213,4 +220,8 @@ export function addSet (set) {
     weight
   }
   return postDispatch('/rest/workout/exercise', postParams, json => receiveAddSet(set.workoutId, set.exercise, json))
+}
+
+export function fetchPastWorkouts (limit) {
+  return getDispatch('/rest/stats/workout', { limit }, receivePastWorkouts)
 }

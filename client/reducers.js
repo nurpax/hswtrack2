@@ -86,14 +86,25 @@ function addWorkoutSet (workout, exercise, set) {
   }
 }
 
-function reduceWorkouts (state = { todayIds: [], byId: {} }, action) {
+function reduceWorkouts (state = { byId: {}, todayIds: [], pastIds: [] }, action) {
   switch (action.type) {
     case c.RECEIVE_WORKOUTS: {
       const workouts = action.data
-      const byId = {}
+      const byId = { ...state.byId }
       workouts.forEach(w => byId[w.id] = w)
       return {
+        ...state,
         todayIds: workouts.map(w => w.id),
+        byId
+      }
+    }
+    case c.RECEIVE_PAST_WORKOUTS: {
+      const workouts = action.data
+      const byId = { ...state.byId }
+      workouts.forEach(w => byId[w.id] = w)
+      return {
+        ...state,
+        pastIds: workouts.map(w => w.id),
         byId
       }
     }
