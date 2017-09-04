@@ -1,6 +1,7 @@
 
 import { createSelector } from 'reselect'
 
+const getExercises = (state) => state.exercises
 const getWorkouts = (state, props) => state.workouts.byId
 const getTodayWorkoutIds = (state, props) => state.workouts.todayIds
 const getRouteWorkoutId = (state, props) => props.match.params.id
@@ -26,4 +27,11 @@ const getWorkoutsForToday = createSelector(
   }
 )
 
-export { getWorkoutsForToday, getWorkoutFromRoute }
+const getExerciseTypes = createSelector(
+  [ getExercises ],
+  (exercises) => {
+    return exercises
+  }
+)
+
+export { getWorkoutsForToday, getWorkoutFromRoute, getExerciseTypes }

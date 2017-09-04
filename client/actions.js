@@ -100,6 +100,16 @@ function receiveAddWorkout (json) {
   }
 }
 
+function receiveAddSet (workoutId, exercise, json) {
+  return {
+    type: c.RECEIVE_ADD_SET,
+    data: json,
+    workoutId: workoutId,
+    exercise,
+    receivedAt: Date.now()
+  }
+}
+
 function receiveDeleteSet (workoutId, id, json) {
   return {
     type: c.RECEIVE_DELETE_SET,
@@ -192,4 +202,15 @@ export function newWorkout () {
 
 export function deleteSet (workoutId, id) {
   return deleteDispatch('/rest/workout/exercise', { id }, json => receiveDeleteSet(workoutId, id, json))
+}
+
+export function addSet (set) {
+  const { workoutId, exercise, reps, weight } = set
+  const postParams = {
+    workoutId,
+    exerciseId: exercise.id,
+    reps,
+    weight
+  }
+  return postDispatch('/rest/workout/exercise', postParams, json => receiveAddSet(set.workoutId, set.exercise, json))
 }

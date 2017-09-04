@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { getUser } from '../auth'
 import * as actions from '../actions'
+import { getExerciseTypes } from '../selectors'
 import Layout from '../components/Layout'
 import { Well } from '../components/helpers'
 
@@ -113,7 +114,7 @@ const mapDispatchToProps = (dispatch) => {
 function mapStateToProps (state) {
   return {
     user: getUser(state),
-    exercises: state.exercises
+    exercises: getExerciseTypes(state)
   }
 }
 

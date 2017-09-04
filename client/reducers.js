@@ -62,6 +62,30 @@ function removeWorkoutSet (workout, setId) {
   }
 }
 
+function addWorkoutSet (workout, exercise, set) {
+  // Exercise type (like 'chin-ups') already exists in the workout?
+  if (workout.exercises.some((e) => e.id == exercise.id)) {
+    return {
+      ...workout,
+      exercises: workout.exercises.map(e => {
+        return {
+          ...e,
+          sets: e.id != exercise.id ? e.sets : e.sets.concat(set)
+        }
+      })
+    }
+  } else {
+    // Append a new exercise and a new set
+    return {
+      ...workout,
+      exercises: workout.exercises.concat({
+        ...exercise,
+        sets: [set]
+      })
+    }
+  }
+}
+
 function reduceWorkouts (state = { todayIds: [], byId: {} }, action) {
   switch (action.type) {
     case c.RECEIVE_WORKOUTS: {
@@ -96,6 +120,14 @@ function reduceWorkouts (state = { todayIds: [], byId: {} }, action) {
         byId: {
           ...state.byId,
           [action.workoutId]: removeWorkoutSet(state.byId[action.workoutId], action.id)
+        }
+      }
+    case c.RECEIVE_ADD_SET:
+      return {
+        ...state,
+        byId: {
+          ...state.byId,
+          [action.workoutId]: addWorkoutSet(state.byId[action.workoutId], action.exercise, action.data)
         }
       }
     default:

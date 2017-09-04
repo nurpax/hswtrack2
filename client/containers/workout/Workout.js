@@ -64,10 +64,7 @@ function mapStateToProps (state) {
 const Workout = function (props) {
   return (
     <Layout user={props.user}>
-      <div>
-        <WorkoutList />
-        <Link to='/exercises'>Edit exercises</Link>
-      </div>
+      <WorkoutList />
     </Layout>
   )
 }
