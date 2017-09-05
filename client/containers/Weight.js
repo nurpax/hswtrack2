@@ -118,7 +118,7 @@ class TodayWeight extends Component {
 function renderPlotPriv(props, svg, origWidth, origHeight) {
   var data    = props.weights
 
-  var margin = { top: 10, right: 25, bottom: 30, left: 25 },
+  var margin = { top: 10, right: 0, bottom: 30, left: 25 },
       width  = origWidth - margin.left - margin.right,
       height = origHeight - margin.top - margin.bottom
 
@@ -167,8 +167,8 @@ function renderPlotPriv(props, svg, origWidth, origHeight) {
 
 function renderPlot(elt, props) {
   return function(me) {
-    var width  = 640 // 320
-    var height = width / 2
+    var width  = 340
+    var height = 2 * width / 3
     renderPlotPriv(props, me, width, height)
   }
 }
