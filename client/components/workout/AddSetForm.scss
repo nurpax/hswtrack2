@@ -1,0 +1,13 @@
+.setInput {
+    width: 90%;
+    padding: 4px;
+}
+
+.setInputUnhide {
+    composes: setInput;
+    vertical-align: middle;
+}
+
+button.tight {
+    padding: 0 10px;
+}

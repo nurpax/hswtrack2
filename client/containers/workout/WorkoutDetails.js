@@ -27,10 +27,10 @@ class AddExerciseForm extends Component {
     return (
       <Well>
         <Row>
-          <Columns n={4}><b>Add a New Exercise</b></Columns>
+          <Columns n={12}><b>Add a New Exercise</b></Columns>
         </Row>
         <Row>
-          <Columns n={6}>
+          <Columns n={12}>
             <select onChange={this.exerciseSelected}>
               <option defaultChecked />
               {exs}

@@ -29,13 +29,11 @@ export default class Layout extends Component {
           </Row>
 
           <Row className={s.padTopBottom}>
-            <Columns n={1} />
-            <Columns n={10}>
+            <Columns n={12}>
               <div className={s.contentMargin}>
                 {this.props.children}
               </div>
             </Columns>
-            <Columns n={1} />
           </Row>
         </div>
       </div>

@@ -20,7 +20,7 @@ export class Unhide extends Component {
     var invis = !this.state.visible ? s.show : s.hide
 
     return (
-      <div>
+      <div className={this.props.className}>
         <a onClick={this.toggleVis} className={invis} href='#'>{this.props.title}</a>
         <div className={vis}>
           {this.props.children}
