@@ -65,6 +65,7 @@ const Workout = function (props) {
   return (
     <Layout user={props.user}>
       <WorkoutList />
+      <Link to='/stats'>Workout history</Link>
     </Layout>
   )
 }
