@@ -55,7 +55,7 @@ export default class AddSetForm extends Component {
             {inp}
           </Columns>
           <Columns n={2}>
-            <button className={classNames('button-primary', 'u-full-width', s.tight)} type='submit'>Add</button>
+            <button className={classNames('u-full-width', s.tight)} type='submit'>Add</button>
           </Columns>
         </Row>
       </form>
