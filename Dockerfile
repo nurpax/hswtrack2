@@ -7,7 +7,7 @@ RUN apt-get update && \
   curl -sL https://deb.nodesource.com/setup_11.x  | bash - && \
   apt-get -y install nodejs
 
-RUN cd /opt/build && npm install && npm run build
+RUN rm -rf /opt/build/static/build && cd /opt/build && npm install && npm run build
 RUN cd /opt/build && stack build --system-ghc
 
 FROM ubuntu:16.04
