@@ -205,6 +205,41 @@ class WeightPlot extends Component {
   }
 }
 
+class WeightValues extends Component {
+    render () {
+        // Take last 10 weights, sort in latest to oldest order
+        const weights = this.props.weight.weights.slice(0, 10).sort((a, b) => {
+            if (a.date > b.date) {
+                return 1;
+            }
+            if (b.date > a.date) {
+                return -1;
+            }
+            return 0;
+        });
+        if (weights.length == 0) {
+            return null;
+        }
+        const ws = weights.map(w => {
+            return (
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'row'
+                }}>
+                    <div style={{ width: '100px' }}>{w.date}:</div>
+                    <div><b>{w.weight}</b> kg</div>
+                </div>
+            );
+        });
+        return (
+            <div style={{marginBottom: '10px', fontSize: '0.9em'}}>
+                Last 10 weights<br />
+                {ws}
+            </div>
+        )
+    }
+}
+
 class WeightsTop extends Component {
   constructor (props) {
     super(props)
@@ -253,8 +288,9 @@ class WeightsTop extends Component {
         </label>)
     }, this)
 
-    if (!this.props.weight.weights)
-      return null
+    if (!this.props.weight.weights) {
+      return null;
+    }
     return (
       <div>
         <br />
@@ -266,6 +302,7 @@ class WeightsTop extends Component {
         <div>
           <WeightPlot weight={this.props.weight} />
         </div>
+        <WeightValues weight={this.props.weight} />
         <div>
           {radios}
         </div>
