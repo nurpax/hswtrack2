@@ -208,12 +208,12 @@ class WeightPlot extends Component {
 class WeightValues extends Component {
     render () {
         // Take last 10 weights, sort in latest to oldest order
-        const weights = this.props.weight.weights.slice(0, 10).sort((a, b) => {
+        const weights = this.props.weight.weights.slice(-10).sort((a, b) => {
             if (a.date > b.date) {
-                return 1;
+                return -1;
             }
             if (b.date > a.date) {
-                return -1;
+                return 1;
             }
             return 0;
         });
