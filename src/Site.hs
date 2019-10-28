@@ -20,6 +20,7 @@ import           Snap.Snaplet
 import qualified Snap.Snaplet.SqliteSimple.JwtAuth as J
 import           Snap.Snaplet.SqliteSimple
 import           Snap.Util.FileServe
+import           System.Environment (lookupEnv)
 ------------------------------------------------------------------------------
 import           Application
 import           Util
@@ -74,7 +75,9 @@ app = makeSnaplet "app" "An snaplet example application." Nothing $ do
     d <- nestSnaplet "db" db sqliteInit
 
     -- Initialize auth that's backed by an sqlite database
-    j <- nestSnaplet "jwt" jwt (J.sqliteJwtInit J.defaults d)
+    jwtFname <- liftIO (lookupEnv "JWT_SECRET_FILE")
+    let jwtDefaults = maybe J.defaults (\fname -> J.defaults { J.signingKeyFilename = fname }) jwtFname
+    j <- nestSnaplet "jwt" jwt (J.sqliteJwtInit jwtDefaults d)
 
     -- Grab the DB connection pool from the sqlite snaplet and call
     -- into the Model to create all the DB tables if necessary.
